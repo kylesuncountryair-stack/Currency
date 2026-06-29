@@ -12,45 +12,23 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #f0f2f5;
-      --surface: #ffffff;
-      --surface-2: #f7f8fa;
-      --border: #dde1e8;
-      --border-focus: #1e3a6e;
-      --text: #0d1117;
-      --text-2: #404758;
-      --text-3: #8c93a3;
-      --navy: #1e3a6e;
-      --navy-dark: #162d57;
-      --navy-light: #e8eef7;
-      --result-bg: #f0f4fb;
-      --result-border: #c8d6ef;
-      --result-text: #1e3a6e;
-      --divider: #e4e7ed;
-      --shadow: 0 2px 8px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.05);
-      --shadow-lg: 0 4px 24px rgba(0,0,0,0.1), 0 1px 4px rgba(0,0,0,0.06);
-    }
-
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #0a0c10;
-        --surface: #12151c;
-        --surface-2: #191d27;
-        --border: #252b38;
-        --border-focus: #4a7cc7;
-        --text: #e4e8f0;
-        --text-2: #8892a8;
-        --text-3: #4a5268;
-        --navy: #4a7cc7;
-        --navy-dark: #3a68ae;
-        --navy-light: #0d1929;
-        --result-bg: #0d1929;
-        --result-border: #1e3a6e;
-        --result-text: #90b8f0;
-        --divider: #1e2433;
-        --shadow: 0 2px 8px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
-        --shadow-lg: 0 4px 24px rgba(0,0,0,0.4), 0 1px 4px rgba(0,0,0,0.3);
-      }
+      --bg: #0a0c10;
+      --surface: #12151c;
+      --surface-2: #191d27;
+      --border: #252b38;
+      --border-focus: #4a7cc7;
+      --text: #e4e8f0;
+      --text-2: #8892a8;
+      --text-3: #4a5268;
+      --navy: #4a7cc7;
+      --navy-dark: #3a68ae;
+      --navy-light: #0d1929;
+      --result-bg: #0d1929;
+      --result-border: #1e3a6e;
+      --result-text: #90b8f0;
+      --divider: #1e2433;
+      --shadow: 0 2px 8px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
+      --shadow-lg: 0 4px 24px rgba(0,0,0,0.4), 0 1px 4px rgba(0,0,0,0.3);
     }
 
     body {
@@ -316,7 +294,6 @@
       font-weight: 500;
     }
 
-    .rate-pill svg { width: 11px; height: 11px; color: var(--navy); }
 
     /* Empty state */
     .empty-state {
@@ -360,19 +337,6 @@
     }
 
     .swap-btn svg { width: 12px; height: 12px; flex-shrink: 0; }
-
-    /* Reverse result */
-    .result-reverse {
-      font-size: 11.5px;
-      color: var(--text-2);
-      margin-top: 8px;
-      padding-top: 8px;
-      border-top: 1px solid var(--result-border);
-      display: none;
-    }
-
-    .result-reverse.visible { display: block; }
-    .result-reverse strong { color: var(--result-text); font-weight: 600; }
 
     /* Status */
 
@@ -527,11 +491,7 @@
         <div class="result-label">Converted Amount</div>
         <div class="result-amount" id="result-amount">—</div>
         <div class="result-desc" id="result-desc"></div>
-        <div class="rate-pill">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-          <span id="rate-text">—</span>
-        </div>
-        <div class="result-reverse" id="result-reverse"></div>
+        <div class="rate-pill" id="rate-text">—</div>
       </div>
 
       </div><!-- end capture-zone -->
@@ -622,9 +582,7 @@
         document.getElementById('rate-text').textContent =
           '1 ' + cur.code + ' = $' + rate.toFixed(6) + ' USD';
         const revAmt = (1 / rate).toFixed(4);
-        const rev = document.getElementById('result-reverse');
-        rev.innerHTML = 'Reverse: <strong>$1 USD = ' + revAmt + ' ' + cur.code + '</strong>';
-        rev.classList.add('visible');
+
       } else {
         const foreignAmt = amt / rate;
         document.getElementById('result-amount').textContent =
@@ -634,9 +592,7 @@
           (dateLabel ? '   ·   ' + dateLabel : '');
         document.getElementById('rate-text').textContent =
           '$1 USD = ' + (1 / rate).toFixed(6) + ' ' + cur.code;
-        const rev = document.getElementById('result-reverse');
-        rev.innerHTML = 'Reverse: <strong>1 ' + cur.code + ' = $' + rate.toFixed(4) + ' USD</strong>';
-        rev.classList.add('visible');
+
       }
       show('result');
     }
@@ -714,7 +670,7 @@
         const canvas = await html2canvas(card, {
           scale: 2,
           useCORS: true,
-          backgroundColor: getComputedStyle(document.getElementById('capture-zone')).backgroundColor,
+          backgroundColor: '#12151c',
           logging: false,
         });
 
