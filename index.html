@@ -343,13 +343,19 @@
     @keyframes spin { to { transform: rotate(360deg); } }
 
     /* Screenshot button */
+    .screenshot-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
     .screenshot-btn {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 7px;
       width: 100%;
-      margin-top: 14px;
       padding: 10px 14px;
       border: 1px dashed var(--border-strong);
       border-radius: var(--radius);
@@ -461,10 +467,16 @@
         </div>
       </div>
 
-      <button class="screenshot-btn" id="screenshot-btn" onclick="takeScreenshot()" aria-label="Save screenshot">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-        Save as image
-      </button>
+      <div class="screenshot-row">
+        <button class="screenshot-btn" id="screenshot-btn" onclick="takeScreenshot('download')" aria-label="Save screenshot as image">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          Save as image
+        </button>
+        <button class="screenshot-btn" id="clipboard-btn" onclick="takeScreenshot('clipboard')" aria-label="Copy screenshot to clipboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy to clipboard
+        </button>
+      </div>
 
     </div>
   </main>
@@ -564,11 +576,14 @@
       }, 350);
     }
 
-    async function takeScreenshot() {
-      const btn = document.getElementById('screenshot-btn');
+    const ICON_CAMERA = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>`;
+    const ICON_COPY = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
+
+    async function takeScreenshot(action) {
+      const btn = document.getElementById(action === 'clipboard' ? 'clipboard-btn' : 'screenshot-btn');
       const card = document.getElementById('capture-card');
       btn.classList.add('capturing');
-      btn.textContent = 'Saving…';
+      btn.textContent = action === 'clipboard' ? 'Copying…' : 'Saving…';
 
       try {
         const canvas = await html2canvas(card, {
@@ -579,18 +594,36 @@
           logging: false,
         });
 
-        const link = document.createElement('a');
-        const cur = document.getElementById('currency').value;
-        const amt = document.getElementById('amount').value;
-        link.download = `${amt}-${cur}-to-USD.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
+        if (action === 'clipboard') {
+          canvas.toBlob(async (blob) => {
+            try {
+              await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+              btn.classList.remove('capturing');
+              btn.innerHTML = ICON_COPY + ' Copied!';
+              setTimeout(() => { btn.innerHTML = ICON_COPY + ' Copy to clipboard'; }, 2000);
+            } catch (e) {
+              alert('Clipboard copy failed. Your browser may not support this. Try "Save as image" instead.');
+              btn.classList.remove('capturing');
+              btn.innerHTML = ICON_COPY + ' Copy to clipboard';
+            }
+          });
+          return;
+        } else {
+          const link = document.createElement('a');
+          const cur = document.getElementById('currency').value;
+          const amt = document.getElementById('amount').value;
+          link.download = `${amt}-${cur}-to-USD.png`;
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+        }
       } catch (e) {
         alert('Screenshot failed. Try right-clicking the page and choosing "Save as image" instead.');
       }
 
       btn.classList.remove('capturing');
-      btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Save as image`;
+      btn.innerHTML = action === 'clipboard'
+        ? ICON_COPY + ' Copy to clipboard'
+        : ICON_CAMERA + ' Save as image';
     }
 
     initDate();
