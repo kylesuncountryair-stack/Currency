@@ -4,7 +4,7 @@ export default async function handler(req, res) {
 
   const { from, date } = req.query;
 
-  const validCodes = ['MXN', 'DOP', 'AWG', 'JMD'];
+  const validCodes = ['MXN', 'DOP', 'AWG', 'JMD', 'CAD'];
   if (!from || !validCodes.includes(from)) {
     return res.status(400).json({ error: 'Invalid or missing currency code' });
   }
