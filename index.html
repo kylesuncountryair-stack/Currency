@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Currency Converter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f5f4f0;
+      --surface: #ffffff;
+      --surface-2: #f9f8f5;
+      --border: rgba(0,0,0,0.09);
+      --border-strong: rgba(0,0,0,0.15);
+      --text: #141413;
+      --text-2: #5a5955;
+      --text-3: #94928d;
+      --accent: #1a6fd4;
+      --accent-bg: #eef4fd;
+      --accent-border: #b3d0f5;
+      --accent-text: #1254a8;
+      --radius: 10px;
+      --radius-lg: 16px;
+      --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #111110;
+        --surface: #1c1c1a;
+        --surface-2: #242422;
+        --border: rgba(255,255,255,0.08);
+        --border-strong: rgba(255,255,255,0.14);
+        --text: #f0efe9;
+        --text-2: #a8a69f;
+        --text-3: #6b6963;
+        --accent: #4a91e8;
+        --accent-bg: #0d1f38;
+        --accent-border: #1e4a82;
+        --accent-text: #7db5f5;
+        --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 16px rgba(0,0,0,0.2);
+      }
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem 4rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .wordmark {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: 2rem;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      margin-bottom: 0.35rem;
+    }
+
+    .wordmark span {
+      color: var(--accent);
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: var(--text-3);
+    }
+
+    .card {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 1.75rem;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .mode-toggle {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 1.75rem;
+      background: var(--surface-2);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 4px;
+    }
+
+    .mode-btn {
+      padding: 9px 12px;
+      border: none;
+      border-radius: 7px;
+      background: transparent;
+      color: var(--text-2);
+      font-size: 13px;
+      font-family: inherit;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+
+    .mode-btn.active {
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .mode-btn svg {
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+    }
+
+    .field-group {
+      margin-bottom: 14px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-3);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    input[type="number"],
+    input[type="date"],
+    select {
+      width: 100%;
+      padding: 11px 14px;
+      font-size: 15px;
+      font-family: inherit;
+      font-weight: 400;
+      color: var(--text);
+      background: var(--surface-2);
+      border: 0.5px solid var(--border-strong);
+      border-radius: var(--radius);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394928d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(26,111,212,0.12);
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .divider {
+      border: none;
+      border-top: 0.5px solid var(--border);
+      margin: 1.5rem 0;
+    }
+
+    .hist-section {
+      display: none;
+    }
+
+    .hist-section.visible {
+      display: block;
+    }
+
+    .hist-note {
+      font-size: 12px;
+      color: var(--text-3);
+      margin-top: 8px;
+      display: flex;
+      align-items: flex-start;
+      gap: 5px;
+    }
+
+    .hist-note svg {
+      width: 13px;
+      height: 13px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* Result */
+    .result {
+      background: var(--accent-bg);
+      border: 0.5px solid var(--accent-border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      text-align: center;
+      display: none;
+    }
+
+    .result.visible {
+      display: block;
+    }
+
+    .result-amount {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: 2.5rem;
+      color: var(--accent-text);
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .result-desc {
+      font-size: 13px;
+      color: var(--text-2);
+      margin-bottom: 12px;
+    }
+
+    .rate-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--surface);
+      border: 0.5px solid var(--border-strong);
+      border-radius: 100px;
+      padding: 5px 12px;
+      font-size: 12px;
+      color: var(--text-2);
+    }
+
+    .rate-pill svg {
+      width: 13px;
+      height: 13px;
+      color: var(--accent);
+    }
+
+    /* Loading & error */
+    .status {
+      text-align: center;
+      padding: 1.25rem;
+      font-size: 14px;
+      color: var(--text-3);
+      display: none;
+    }
+
+    .status.visible {
+      display: block;
+    }
+
+    .status.error {
+      color: #c0392b;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--border-strong);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: -3px;
+      margin-right: 6px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Footer */
+    footer {
+      margin-top: 2rem;
+      font-size: 12px;
+      color: var(--text-3);
+      text-align: center;
+      max-width: 480px;
+    }
+
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 520px) {
+      .two-col { grid-template-columns: 1fr; }
+      .result-amount { font-size: 2rem; }
+      .card { padding: 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="wordmark">fx<span>·</span>convert</div>
+    <p class="subtitle">Convert currencies to USD — live or historical</p>
+  </header>
+
+  <main class="card" aria-label="Currency converter">
+
+    <div class="mode-toggle" role="tablist" aria-label="Rate mode">
+      <button class="mode-btn active" id="tab-live" role="tab" aria-selected="true" onclick="setMode('live')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 0 0-9-9M3 12a9 9 0 0 0 9 9"/><path d="M12 3v2M12 19v2M21 12h-2M5 12H3"/><circle cx="12" cy="12" r="1"/></svg>
+        Live rate
+      </button>
+      <button class="mode-btn" id="tab-hist" role="tab" aria-selected="false" onclick="setMode('historical')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Historical date
+      </button>
+    </div>
+
+    <div class="two-col">
+      <div class="field-group">
+        <label for="amount">Amount</label>
+        <input type="number" id="amount" value="540" min="0" step="any" placeholder="0.00" aria-label="Amount to convert" oninput="convert()" />
+      </div>
+      <div class="field-group">
+        <label for="currency">From</label>
+        <select id="currency" aria-label="Select currency" onchange="convert()">
+          <option value="MXN">🇲🇽 Mexican Peso</option>
+          <option value="DOP">🇩🇴 Dominican Peso</option>
+          <option value="AWG">🇦🇼 Aruban Florin</option>
+          <option value="USD-TCI">🇹🇨 Turks & Caicos</option>
+          <option value="JMD">🇯🇲 Jamaican Dollar</option>
+        </select>
+      </div>
+    </div>
+
+    <section class="hist-section" id="hist-section" aria-label="Historical date">
+      <div class="field-group">
+        <label for="histdate">Date</label>
+        <input type="date" id="histdate" aria-label="Historical date" onchange="convert()" />
+      </div>
+      <p class="hist-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        Rates sourced from the European Central Bank via Frankfurter API. Pick any date within the last 12 months.
+      </p>
+      <hr class="divider" />
+    </section>
+
+    <div class="status" id="status-loading" aria-live="polite">
+      <span class="spinner" aria-hidden="true"></span>Fetching rate…
+    </div>
+    <div class="status error" id="status-error" role="alert"></div>
+
+    <div class="result" id="result" aria-live="polite">
+      <div class="result-amount" id="result-amount">—</div>
+      <div class="result-desc" id="result-desc"></div>
+      <div class="rate-pill" id="rate-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+        <span id="rate-text">—</span>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    Rates via <a href="https://www.frankfurter.app" target="_blank" rel="noopener">Frankfurter</a> (ECB data) · Turks &amp; Caicos uses USD natively
+  </footer>
+
+  <script>
+    const CURRENCIES = {
+      MXN:     { name: 'Mexican Peso',            sym: 'MX$',  flag: '🇲🇽', code: 'MXN' },
+      DOP:     { name: 'Dominican Peso',           sym: 'RD$',  flag: '🇩🇴', code: 'DOP' },
+      AWG:     { name: 'Aruban Florin',            sym: 'ƒ',    flag: '🇦🇼', code: 'AWG' },
+      'USD-TCI':{ name: 'USD (Turks & Caicos)',    sym: 'US$',  flag: '🇹🇨', code: 'USD', fixed: true },
+      JMD:     { name: 'Jamaican Dollar',          sym: 'J$',   flag: '🇯🇲', code: 'JMD' },
+    };
+
+    let mode = 'live';
+    let debounce = null;
+
+    function setMode(m) {
+      mode = m;
+      document.getElementById('tab-live').classList.toggle('active', m === 'live');
+      document.getElementById('tab-hist').classList.toggle('active', m === 'historical');
+      document.getElementById('tab-live').setAttribute('aria-selected', m === 'live');
+      document.getElementById('tab-hist').setAttribute('aria-selected', m === 'historical');
+      document.getElementById('hist-section').classList.toggle('visible', m === 'historical');
+      convert();
+    }
+
+    function initDate() {
+      const el = document.getElementById('histdate');
+      const today = new Date();
+      const yearAgo = new Date(today);
+      yearAgo.setFullYear(today.getFullYear() - 1);
+      el.max = today.toISOString().split('T')[0];
+      el.min = yearAgo.toISOString().split('T')[0];
+      const feb14 = '2026-02-14';
+      el.value = feb14 <= el.max && feb14 >= el.min ? feb14 : el.max;
+    }
+
+    function showLoading() {
+      hide('result'); hide('status-error');
+      show('status-loading');
+    }
+
+    function showError(msg) {
+      hide('status-loading'); hide('result');
+      const el = document.getElementById('status-error');
+      el.textContent = msg;
+      el.classList.add('visible');
+    }
+
+    function showResult(usd, rate, key, dateLabel) {
+      hide('status-loading'); hide('status-error');
+      const cur = CURRENCIES[key];
+      const amt = parseFloat(document.getElementById('amount').value) || 0;
+      document.getElementById('result-amount').textContent =
+        '$' + usd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('result-desc').textContent =
+        cur.flag + ' ' + amt.toLocaleString('en-US') + ' ' + (cur.fixed ? 'USD' : cur.code) +
+        ' → USD' + (dateLabel ? '  ·  ' + dateLabel : '');
+      document.getElementById('rate-text').textContent =
+        cur.fixed ? '1 USD = 1 USD (pegged)' : '1 ' + cur.code + ' = $' + rate.toFixed(6) + ' USD';
+      show('result');
+    }
+
+    function show(id) { document.getElementById(id).classList.add('visible'); }
+    function hide(id) { document.getElementById(id).classList.remove('visible'); }
+
+    async function convert() {
+      clearTimeout(debounce);
+      debounce = setTimeout(async () => {
+        const key = document.getElementById('currency').value;
+        const amount = parseFloat(document.getElementById('amount').value);
+        const cur = CURRENCIES[key];
+        if (!amount || amount <= 0) { hide('result'); hide('status-loading'); hide('status-error'); return; }
+
+        if (cur.fixed) {
+          showResult(amount, 1, key, mode === 'historical' ? '(USD-pegged — always 1 : 1)' : null);
+          return;
+        }
+
+        showLoading();
+        try {
+          if (mode === 'live') {
+            const res = await fetch(`https://api.frankfurter.app/latest?from=${cur.code}&to=USD`);
+            if (!res.ok) throw new Error('Rate unavailable');
+            const data = await res.json();
+            showResult(amount * data.rates.USD, data.rates.USD, key, null);
+          } else {
+            const date = document.getElementById('histdate').value;
+            if (!date) { hide('status-loading'); return; }
+            const res = await fetch(`https://api.frankfurter.app/${date}?from=${cur.code}&to=USD`);
+            if (!res.ok) throw new Error('Rate unavailable for that date');
+            const data = await res.json();
+            const d = new Date(data.date + 'T12:00:00');
+            const label = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            showResult(amount * data.rates.USD, data.rates.USD, key, label);
+          }
+        } catch (e) {
+          showError('Could not fetch exchange rate. Check your connection and try again.');
+        }
+      }, 350);
+    }
+
+    initDate();
+    convert();
+  </script>
+</body>
+</html>
