@@ -510,7 +510,6 @@
     </div>
   </main>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script>
     const CURRENCIES = {
       MXN: { name: 'Mexican Peso',    sym: 'MX$', flag: '🇲🇽', code: 'MXN' },
@@ -524,6 +523,7 @@
     let mode = 'live';
     let debounce = null;
     let direction = 'to-usd'; // 'to-usd' or 'to-foreign'
+    let lastSnapshot = null; // stores data for clean canvas screenshot
 
 
     function setMode(m) {
@@ -594,6 +594,16 @@
           '$1 USD = ' + (1 / rate).toFixed(6) + ' ' + cur.code;
 
       }
+      // Save snapshot data for clean canvas export
+      const amt2 = parseFloat(document.getElementById('amount').value) || 0;
+      const cur2 = CURRENCIES[key];
+      lastSnapshot = {
+        resultAmount: document.getElementById('result-amount').textContent,
+        desc: document.getElementById('result-desc').textContent,
+        rate: document.getElementById('rate-text').textContent,
+        dateLabel: dateLabel || null,
+        mode: mode,
+      };
       show('result');
     }
 
@@ -660,19 +670,78 @@
     const ICON_DOWNLOAD = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`;
     const ICON_COPY = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
 
+    function buildSnapshotCanvas() {
+      const dpr = 2;
+      const W = 520, H = 220;
+      const canvas = document.createElement('canvas');
+      canvas.width = W * dpr;
+      canvas.height = H * dpr;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+
+      // Background
+      ctx.fillStyle = '#12151c';
+      ctx.fillRect(0, 0, W, H);
+
+      // Left accent bar
+      ctx.fillStyle = '#4a7cc7';
+      ctx.fillRect(0, 0, 4, H);
+
+      // Top label
+      ctx.fillStyle = '#4a7cc7';
+      ctx.font = '600 11px Inter, system-ui, sans-serif';
+      ctx.letterSpacing = '0.1em';
+      ctx.fillText('CONVERTED AMOUNT', 24, 32);
+
+      // Big result amount
+      ctx.fillStyle = '#90b8f0';
+      ctx.font = '700 42px Inter, system-ui, sans-serif';
+      ctx.letterSpacing = '-0.02em';
+      ctx.fillText(lastSnapshot ? lastSnapshot.resultAmount : '—', 24, 88);
+
+      // Divider
+      ctx.strokeStyle = '#1e3a6e';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(24, 104);
+      ctx.lineTo(W - 24, 104);
+      ctx.stroke();
+
+      // Description
+      ctx.fillStyle = '#8892a8';
+      ctx.font = '400 13px Inter, system-ui, sans-serif';
+      ctx.letterSpacing = '0';
+      ctx.fillText(lastSnapshot ? lastSnapshot.desc : '', 24, 128);
+
+      // Rate
+      ctx.fillStyle = '#4a5268';
+      ctx.font = '500 12px Inter, system-ui, sans-serif';
+      ctx.fillText(lastSnapshot ? lastSnapshot.rate : '', 24, 152);
+
+      // Date label if historical
+      if (lastSnapshot && lastSnapshot.dateLabel) {
+        ctx.fillStyle = '#4a5268';
+        ctx.font = '500 11px Inter, system-ui, sans-serif';
+        ctx.fillText('Rate as of ' + lastSnapshot.dateLabel, 24, 172);
+      }
+
+      // Bottom watermark
+      ctx.fillStyle = '#252b38';
+      ctx.font = '400 11px Inter, system-ui, sans-serif';
+      ctx.fillText('Currency Converter', W - 140, H - 16);
+
+      return canvas;
+    }
+
     async function takeScreenshot(action) {
       const btn = document.getElementById(action === 'clipboard' ? 'clipboard-btn' : 'screenshot-btn');
-      const card = document.getElementById('capture-zone');
       btn.classList.add('capturing');
       btn.textContent = action === 'clipboard' ? 'Copying…' : 'Saving…';
 
       try {
-        const canvas = await html2canvas(card, {
-          scale: 2,
-          useCORS: true,
-          backgroundColor: '#12151c',
-          logging: false,
-        });
+        if (!lastSnapshot) { alert('Convert a currency first, then save.'); btn.classList.remove('capturing'); btn.innerHTML = action === 'clipboard' ? ICON_COPY + ' Copy to Clipboard' : ICON_DOWNLOAD + ' Save as Image'; return; }
+
+        const canvas = buildSnapshotCanvas();
 
         if (action === 'clipboard') {
           canvas.toBlob(async (blob) => {
@@ -682,7 +751,7 @@
               btn.innerHTML = ICON_COPY + ' Copied!';
               setTimeout(() => { btn.innerHTML = ICON_COPY + ' Copy to Clipboard'; }, 2000);
             } catch (e) {
-              alert('Clipboard copy failed. Your browser may not support this — try "Save as Image" instead.');
+              alert('Clipboard copy failed — try "Save as Image" instead.');
               btn.classList.remove('capturing');
               btn.innerHTML = ICON_COPY + ' Copy to Clipboard';
             }
@@ -697,7 +766,7 @@
           link.click();
         }
       } catch (e) {
-        alert('Screenshot failed. Try right-clicking the page instead.');
+        alert('Export failed. Try again.');
       }
 
       btn.classList.remove('capturing');
