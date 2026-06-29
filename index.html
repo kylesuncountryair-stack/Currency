@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,43 +7,59 @@
   <title>Currency Converter</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;1,14..32,400&family=Playfair+Display:wght@600&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #f5f4f0;
+      --bg: #eef0f5;
       --surface: #ffffff;
-      --surface-2: #f9f8f5;
-      --border: rgba(0,0,0,0.09);
-      --border-strong: rgba(0,0,0,0.15);
-      --text: #141413;
-      --text-2: #5a5955;
-      --text-3: #94928d;
-      --accent: #1a6fd4;
-      --accent-bg: #eef4fd;
-      --accent-border: #b3d0f5;
-      --accent-text: #1254a8;
-      --radius: 10px;
-      --radius-lg: 16px;
-      --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04);
+      --surface-2: #f4f5f8;
+      --surface-3: #eaecf2;
+      --border: rgba(0,0,0,0.08);
+      --border-strong: rgba(0,0,0,0.13);
+      --text: #0f1117;
+      --text-2: #4a4f5e;
+      --text-3: #8b90a0;
+      --accent: #3b6ef5;
+      --accent-dark: #2a55d4;
+      --accent-bg: #f0f4ff;
+      --accent-border: #c5d3fb;
+      --accent-text: #1e3fa8;
+      --green: #0e9f6e;
+      --green-bg: #ecfdf5;
+      --green-border: #a7f3d0;
+      --green-text: #065f46;
+      --radius: 12px;
+      --radius-lg: 20px;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
+      --shadow: 0 4px 6px rgba(0,0,0,0.05), 0 10px 30px rgba(0,0,0,0.07);
+      --shadow-lg: 0 8px 16px rgba(0,0,0,0.08), 0 24px 48px rgba(0,0,0,0.1);
     }
 
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg: #111110;
-        --surface: #1c1c1a;
-        --surface-2: #242422;
-        --border: rgba(255,255,255,0.08);
-        --border-strong: rgba(255,255,255,0.14);
-        --text: #f0efe9;
-        --text-2: #a8a69f;
-        --text-3: #6b6963;
-        --accent: #4a91e8;
-        --accent-bg: #0d1f38;
-        --accent-border: #1e4a82;
-        --accent-text: #7db5f5;
-        --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 16px rgba(0,0,0,0.2);
+        --bg: #0d0f14;
+        --surface: #161820;
+        --surface-2: #1e2029;
+        --surface-3: #252733;
+        --border: rgba(255,255,255,0.07);
+        --border-strong: rgba(255,255,255,0.12);
+        --text: #e8eaf2;
+        --text-2: #9098b0;
+        --text-3: #555c75;
+        --accent: #5b84f8;
+        --accent-dark: #4a6fe0;
+        --accent-bg: #111628;
+        --accent-border: #1e2f6a;
+        --accent-text: #93aafc;
+        --green: #34d399;
+        --green-bg: #0a1f16;
+        --green-border: #064e35;
+        --green-text: #6ee7b7;
+        --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+        --shadow: 0 4px 6px rgba(0,0,0,0.2), 0 10px 30px rgba(0,0,0,0.3);
+        --shadow-lg: 0 8px 16px rgba(0,0,0,0.3), 0 24px 48px rgba(0,0,0,0.4);
       }
     }
 
@@ -54,37 +71,88 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 2rem 1rem 4rem;
+      justify-content: center;
+      padding: 2rem 1rem;
     }
 
-
+    /* Card */
     .card {
       background: var(--surface);
-      border: 0.5px solid var(--border);
       border-radius: var(--radius-lg);
-      box-shadow: var(--shadow);
-      padding: 1.75rem;
+      box-shadow: var(--shadow-lg);
       width: 100%;
-      max-width: 480px;
+      max-width: 440px;
+      overflow: hidden;
     }
 
+    /* Card header band */
+    .card-header {
+      background: linear-gradient(135deg, #60a5fa 0%, #1e3a8a 100%);
+      padding: 1.75rem 1.75rem 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-header::before {
+      content: '';
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 160px; height: 160px;
+      background: rgba(255,255,255,0.07);
+      border-radius: 50%;
+    }
+
+    .card-header::after {
+      content: '';
+      position: absolute;
+      bottom: -60px; left: -20px;
+      width: 200px; height: 200px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 50%;
+    }
+
+    .header-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 4px;
+    }
+
+    .header-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: #fff;
+      letter-spacing: -0.02em;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Body */
+    .card-body {
+      padding: 1.5rem 1.75rem 1.75rem;
+    }
+
+    /* Mode toggle */
     .mode-toggle {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 1.75rem;
+      gap: 6px;
       background: var(--surface-2);
-      border: 0.5px solid var(--border);
       border-radius: var(--radius);
       padding: 4px;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--border);
     }
 
     .mode-btn {
-      padding: 9px 12px;
+      padding: 9px 10px;
       border: none;
-      border-radius: 7px;
+      border-radius: 9px;
       background: transparent;
-      color: var(--text-2);
+      color: var(--text-3);
       font-size: 13px;
       font-family: inherit;
       font-weight: 500;
@@ -93,120 +161,132 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      transition: all 0.15s;
+      transition: all 0.18s;
+      white-space: nowrap;
     }
 
     .mode-btn.active {
       background: var(--surface);
-      color: var(--text);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      color: var(--accent);
+      box-shadow: var(--shadow-sm);
     }
 
-    .mode-btn svg {
-      width: 15px;
-      height: 15px;
-      flex-shrink: 0;
-    }
+    .mode-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
 
-    .field-group {
-      margin-bottom: 14px;
-    }
+    /* Fields */
+    .field-group { margin-bottom: 12px; }
 
     label {
       display: block;
-      font-size: 12px;
-      font-weight: 500;
+      font-size: 11px;
+      font-weight: 600;
       color: var(--text-3);
-      margin-bottom: 6px;
+      margin-bottom: 5px;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.07em;
     }
 
     input[type="number"],
     input[type="date"],
     select {
       width: 100%;
-      padding: 11px 14px;
+      padding: 12px 14px;
       font-size: 15px;
       font-family: inherit;
       font-weight: 400;
       color: var(--text);
       background: var(--surface-2);
-      border: 0.5px solid var(--border-strong);
+      border: 1px solid var(--border-strong);
       border-radius: var(--radius);
       outline: none;
-      transition: border-color 0.15s, box-shadow 0.15s;
+      transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
       appearance: none;
       -webkit-appearance: none;
     }
 
     select {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394928d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238b90a0' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
       background-position: right 14px center;
       padding-right: 36px;
+      cursor: pointer;
     }
 
-    input:focus,
-    select:focus {
+    input:focus, select:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(26,111,212,0.12);
+      box-shadow: 0 0 0 3px rgba(59,110,245,0.15);
+      background: var(--surface);
     }
 
     .two-col {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
+      gap: 10px;
     }
 
-    .divider {
-      border: none;
-      border-top: 0.5px solid var(--border);
-      margin: 1.5rem 0;
+    /* Arrow between fields */
+    .convert-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 4px 0 16px;
+      gap: 8px;
+      color: var(--text-3);
+      font-size: 12px;
+      font-weight: 500;
     }
 
-    .hist-section {
-      display: none;
-    }
+    .convert-arrow svg { width: 16px; height: 16px; color: var(--accent); }
 
-    .hist-section.visible {
-      display: block;
-    }
+    /* Historical section */
+    .hist-section { display: none; margin-bottom: 4px; }
+    .hist-section.visible { display: block; }
 
     .hist-note {
-      font-size: 12px;
+      font-size: 11.5px;
       color: var(--text-3);
-      margin-top: 8px;
+      margin-top: 6px;
+      margin-bottom: 14px;
       display: flex;
       align-items: flex-start;
       gap: 5px;
+      line-height: 1.5;
     }
+    .hist-note svg { width: 12px; height: 12px; flex-shrink: 0; margin-top: 2px; }
 
-    .hist-note svg {
-      width: 13px;
-      height: 13px;
-      flex-shrink: 0;
-      margin-top: 1px;
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 14px 0;
     }
 
     /* Result */
     .result {
-      background: var(--accent-bg);
-      border: 0.5px solid var(--accent-border);
+      background: var(--green-bg);
+      border: 1px solid var(--green-border);
       border-radius: var(--radius);
-      padding: 1.25rem 1.5rem;
+      padding: 1.25rem 1.5rem 1rem;
       text-align: center;
       display: none;
+      margin-top: 4px;
     }
 
-    .result.visible {
-      display: block;
+    .result.visible { display: block; }
+
+    .result-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--green-text);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      opacity: 0.7;
     }
 
     .result-amount {
-      font-family: 'DM Serif Display', Georgia, serif;
-      font-size: 2.5rem;
-      color: var(--accent-text);
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 3rem;
+      color: var(--green-text);
       letter-spacing: -0.03em;
       line-height: 1;
       margin-bottom: 8px;
@@ -214,145 +294,189 @@
 
     .result-desc {
       font-size: 13px;
-      color: var(--text-2);
-      margin-bottom: 12px;
+      color: var(--green-text);
+      opacity: 0.7;
+      margin-bottom: 10px;
     }
 
     .rate-pill {
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      background: var(--surface);
-      border: 0.5px solid var(--border-strong);
+      background: rgba(255,255,255,0.6);
+      border: 1px solid var(--green-border);
       border-radius: 100px;
-      padding: 5px 12px;
-      font-size: 12px;
-      color: var(--text-2);
+      padding: 4px 11px;
+      font-size: 11.5px;
+      color: var(--green-text);
+      font-weight: 500;
     }
 
-    .rate-pill svg {
-      width: 13px;
-      height: 13px;
-      color: var(--accent);
+    @media (prefers-color-scheme: dark) {
+      .rate-pill { background: rgba(255,255,255,0.05); }
     }
 
-    /* Loading & error */
+    .rate-pill svg { width: 12px; height: 12px; }
+
+    /* Status */
     .status {
       text-align: center;
       padding: 1.25rem;
-      font-size: 14px;
+      font-size: 13px;
       color: var(--text-3);
       display: none;
     }
-
-    .status.visible {
-      display: block;
-    }
-
-    .status.error {
-      color: #c0392b;
-    }
+    .status.visible { display: block; }
+    .status.error { color: #e53e3e; }
 
     .spinner {
       display: inline-block;
-      width: 16px;
-      height: 16px;
+      width: 14px; height: 14px;
       border: 2px solid var(--border-strong);
       border-top-color: var(--accent);
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
-      vertical-align: -3px;
+      vertical-align: -2px;
       margin-right: 6px;
     }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+    /* Screenshot button */
+    .screenshot-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      width: 100%;
+      margin-top: 14px;
+      padding: 10px 14px;
+      border: 1px dashed var(--border-strong);
+      border-radius: var(--radius);
+      background: transparent;
+      color: var(--text-3);
+      font-size: 12.5px;
+      font-family: inherit;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
     }
 
-    /* Footer */
+    .screenshot-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-bg);
+      border-style: solid;
+    }
 
-    @media (max-width: 520px) {
+    .screenshot-btn svg { width: 14px; height: 14px; }
+
+    .screenshot-btn.capturing {
+      opacity: 0.5;
+      cursor: wait;
+    }
+
+    /* Capture frame — used for the screenshot target */
+    .capture-zone {
+      background: var(--surface);
+    }
+
+    @media (max-width: 480px) {
       .two-col { grid-template-columns: 1fr; }
-      .result-amount { font-size: 2rem; }
-      .card { padding: 1.25rem; }
+      .result-amount { font-size: 2.4rem; }
+      .card-body { padding: 1.25rem; }
+      .card-header { padding: 1.4rem 1.25rem 1.25rem; }
     }
   </style>
 </head>
 <body>
 
+  <main class="card" id="capture-card" aria-label="Currency converter">
 
+    <div class="card-header">
+      <div class="header-label">Currency Converter</div>
+      <div class="header-title">Convert to USD</div>
+    </div>
 
+    <div class="card-body capture-zone">
 
+      <div class="mode-toggle" role="tablist" aria-label="Rate mode">
+        <button class="mode-btn active" id="tab-live" role="tab" aria-selected="true" onclick="setMode('live')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          Live rate
+        </button>
+        <button class="mode-btn" id="tab-hist" role="tab" aria-selected="false" onclick="setMode('historical')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Historical
+        </button>
+      </div>
 
+      <div class="two-col">
+        <div class="field-group">
+          <label for="amount">Amount</label>
+          <input type="number" id="amount" value="540" min="0" step="any" placeholder="0.00" aria-label="Amount to convert" oninput="convert()" />
+        </div>
+        <div class="field-group">
+          <label for="currency">Currency</label>
+          <select id="currency" aria-label="Select currency" onchange="convert()">
+            <option value="MXN">🇲🇽 Mexican Peso</option>
+            <option value="DOP">🇩🇴 Dominican Peso</option>
+            <option value="AWG">🇦🇼 Aruban Florin</option>
+            <option value="JMD">🇯🇲 Jamaican Dollar</option>
+            <option value="CAD">🇨🇦 Canadian Dollar</option>
+            <option value="LRD">🇱🇷 Liberian Dollar</option>
+          </select>
+        </div>
+      </div>
 
-  <main class="card" aria-label="Currency converter">
+      <div class="convert-arrow" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+        converting to US Dollar
+      </div>
 
-    <div class="mode-toggle" role="tablist" aria-label="Rate mode">
-      <button class="mode-btn active" id="tab-live" role="tab" aria-selected="true" onclick="setMode('live')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 0 0-9-9M3 12a9 9 0 0 0 9 9"/><path d="M12 3v2M12 19v2M21 12h-2M5 12H3"/><circle cx="12" cy="12" r="1"/></svg>
-        Live rate
+      <section class="hist-section" id="hist-section" aria-label="Historical date">
+        <div class="field-group">
+          <label for="histdate">Date</label>
+          <input type="date" id="histdate" aria-label="Historical date" onchange="convert()" />
+        </div>
+        <p class="hist-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          Pick any date within the last 12 months.
+        </p>
+        <hr class="divider" />
+      </section>
+
+      <div class="status" id="status-loading" aria-live="polite">
+        <span class="spinner" aria-hidden="true"></span>Fetching rate…
+      </div>
+      <div class="status error" id="status-error" role="alert"></div>
+
+      <div class="result" id="result" aria-live="polite">
+        <div class="result-label">Result</div>
+        <div class="result-amount" id="result-amount">—</div>
+        <div class="result-desc" id="result-desc"></div>
+        <div class="rate-pill" id="rate-pill">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+          <span id="rate-text">—</span>
+        </div>
+      </div>
+
+      <button class="screenshot-btn" id="screenshot-btn" onclick="takeScreenshot()" aria-label="Save screenshot">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        Save as image
       </button>
-      <button class="mode-btn" id="tab-hist" role="tab" aria-selected="false" onclick="setMode('historical')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        Historical date
-      </button>
+
     </div>
-
-    <div class="two-col">
-      <div class="field-group">
-        <label for="amount">Amount</label>
-        <input type="number" id="amount" value="540" min="0" step="any" placeholder="0.00" aria-label="Amount to convert" oninput="convert()" />
-      </div>
-      <div class="field-group">
-        <label for="currency">From</label>
-        <select id="currency" aria-label="Select currency" onchange="convert()">
-          <option value="MXN">🇲🇽 Mexican Peso</option>
-          <option value="DOP">🇩🇴 Dominican Peso</option>
-          <option value="AWG">🇦🇼 Aruban Florin</option>
-          <option value="JMD">🇯🇲 Jamaican Dollar</option>
-          <option value="CAD">🇨🇦 Canadian Dollar</option>
-          <option value="LRD">🇱🇷 Liberian Dollar</option>
-        </select>
-      </div>
-    </div>
-
-    <section class="hist-section" id="hist-section" aria-label="Historical date">
-      <div class="field-group">
-        <label for="histdate">Date</label>
-        <input type="date" id="histdate" aria-label="Historical date" onchange="convert()" />
-      </div>
-      <p class="hist-note">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-        Pick any date within the last 12 months.
-      </p>
-      <hr class="divider" />
-    </section>
-
-    <div class="status" id="status-loading" aria-live="polite">
-      <span class="spinner" aria-hidden="true"></span>Fetching rate…
-    </div>
-    <div class="status error" id="status-error" role="alert"></div>
-
-    <div class="result" id="result" aria-live="polite">
-      <div class="result-amount" id="result-amount">—</div>
-      <div class="result-desc" id="result-desc"></div>
-      <div class="rate-pill" id="rate-pill">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-        <span id="rate-text">—</span>
-      </div>
-    </div>
-
   </main>
 
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script>
     const CURRENCIES = {
-      MXN:     { name: 'Mexican Peso',            sym: 'MX$',  flag: '🇲🇽', code: 'MXN' },
-      DOP:     { name: 'Dominican Peso',           sym: 'RD$',  flag: '🇩🇴', code: 'DOP' },
-      AWG:     { name: 'Aruban Florin',            sym: 'ƒ',    flag: '🇦🇼', code: 'AWG' },
-      JMD:     { name: 'Jamaican Dollar',          sym: 'J$',   flag: '🇯🇲', code: 'JMD' },
-      CAD:     { name: 'Canadian Dollar',          sym: 'CA$', flag: '🇨🇦', code: 'CAD' },
-      LRD:     { name: 'Liberian Dollar',          sym: 'L$',  flag: '🇱🇷', code: 'LRD' },
+      MXN: { name: 'Mexican Peso',    sym: 'MX$', flag: '🇲🇽', code: 'MXN' },
+      DOP: { name: 'Dominican Peso',  sym: 'RD$', flag: '🇩🇴', code: 'DOP' },
+      AWG: { name: 'Aruban Florin',   sym: 'ƒ',   flag: '🇦🇼', code: 'AWG' },
+      JMD: { name: 'Jamaican Dollar', sym: 'J$',  flag: '🇯🇲', code: 'JMD' },
+      CAD: { name: 'Canadian Dollar', sym: 'CA$', flag: '🇨🇦', code: 'CAD' },
+      LRD: { name: 'Liberian Dollar', sym: 'L$',  flag: '🇱🇷', code: 'LRD' },
     };
 
     let mode = 'live';
@@ -398,10 +522,10 @@
       document.getElementById('result-amount').textContent =
         '$' + usd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
       document.getElementById('result-desc').textContent =
-        cur.flag + ' ' + amt.toLocaleString('en-US') + ' ' + (cur.fixed ? 'USD' : cur.code) +
+        cur.flag + ' ' + amt.toLocaleString('en-US') + ' ' + cur.code +
         ' → USD' + (dateLabel ? '  ·  ' + dateLabel : '');
       document.getElementById('rate-text').textContent =
-        cur.fixed ? '1 USD = 1 USD (pegged)' : '1 ' + cur.code + ' = $' + rate.toFixed(6) + ' USD';
+        '1 ' + cur.code + ' = $' + rate.toFixed(6) + ' USD';
       show('result');
     }
 
@@ -415,11 +539,6 @@
         const amount = parseFloat(document.getElementById('amount').value);
         const cur = CURRENCIES[key];
         if (!amount || amount <= 0) { hide('result'); hide('status-loading'); hide('status-error'); return; }
-
-        if (cur.fixed) {
-          showResult(amount, 1, key, mode === 'historical' ? '(USD-pegged — always 1 : 1)' : null);
-          return;
-        }
 
         showLoading();
         try {
@@ -442,6 +561,35 @@
           showError('Could not fetch exchange rate. Check your connection and try again.');
         }
       }, 350);
+    }
+
+    async function takeScreenshot() {
+      const btn = document.getElementById('screenshot-btn');
+      const card = document.getElementById('capture-card');
+      btn.classList.add('capturing');
+      btn.textContent = 'Saving…';
+
+      try {
+        const canvas = await html2canvas(card, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: getComputedStyle(document.documentElement)
+            .getPropertyValue('--surface').trim() || '#ffffff',
+          logging: false,
+        });
+
+        const link = document.createElement('a');
+        const cur = document.getElementById('currency').value;
+        const amt = document.getElementById('amount').value;
+        link.download = `${amt}-${cur}-to-USD.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      } catch (e) {
+        alert('Screenshot failed. Try right-clicking the page and choosing "Save as image" instead.');
+      }
+
+      btn.classList.remove('capturing');
+      btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Save as image`;
     }
 
     initDate();
