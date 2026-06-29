@@ -346,6 +346,7 @@
           <option value="MXN">🇲🇽 Mexican Peso</option>
           <option value="DOP">🇩🇴 Dominican Peso</option>
           <option value="AWG">🇦🇼 Aruban Florin</option>
+          <option value="USD-TCI">🇹🇨 Turks & Caicos</option>
           <option value="JMD">🇯🇲 Jamaican Dollar</option>
         </select>
       </div>
@@ -380,7 +381,7 @@
   </main>
 
   <footer>
-    Rates via <a href="https://api.frankfurter.dev" target="_blank" rel="noopener">Frankfurter</a> (ECB data) · Turks &amp; Caicos uses USD natively
+    Rates via <a href="https://www.frankfurter.app" target="_blank" rel="noopener">Frankfurter</a> (ECB data) · Turks &amp; Caicos uses USD natively
   </footer>
 
   <script>
@@ -461,14 +462,14 @@
         showLoading();
         try {
           if (mode === 'live') {
-            const res = await fetch(`https://api.frankfurter.dev/latest?from=${cur.code}&to=USD`);
+            const res = await fetch(`/api/rate?from=${cur.code}`);
             if (!res.ok) throw new Error('Rate unavailable');
             const data = await res.json();
             showResult(amount * data.rates.USD, data.rates.USD, key, null);
           } else {
             const date = document.getElementById('histdate').value;
             if (!date) { hide('status-loading'); return; }
-            const res = await fetch(`https://api.frankfurter.dev/${date}?from=${cur.code}&to=USD`);
+            const res = await fetch(`/api/rate?from=${cur.code}&date=${date}`);
             if (!res.ok) throw new Error('Rate unavailable for that date');
             const data = await res.json();
             const d = new Date(data.date + 'T12:00:00');
