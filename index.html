@@ -284,7 +284,64 @@
 
     .rate-pill svg { width: 11px; height: 11px; color: var(--navy); }
 
+    /* Empty state */
+    .empty-state {
+      border: 1px dashed var(--border);
+      padding: 1.1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 4px;
+      color: var(--text-3);
+    }
+
+    .empty-state svg { width: 18px; height: 18px; flex-shrink: 0; opacity: 0.5; }
+
+    .empty-state-text { font-size: 13px; line-height: 1.5; }
+    .empty-state-text strong { display: block; font-weight: 600; font-size: 12.5px; color: var(--text-2); margin-bottom: 2px; }
+
+    .empty-state.hidden { display: none; }
+
+    /* Swap button */
+    .swap-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-3);
+      font-size: 12px;
+      font-family: inherit;
+      font-weight: 500;
+      padding: 5px 10px;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .swap-btn:hover {
+      border-color: var(--navy);
+      color: var(--navy);
+      background: var(--navy-light);
+    }
+
+    .swap-btn svg { width: 12px; height: 12px; flex-shrink: 0; }
+
+    /* Reverse result */
+    .result-reverse {
+      font-size: 11.5px;
+      color: var(--text-2);
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--result-border);
+      display: none;
+    }
+
+    .result-reverse.visible { display: block; }
+    .result-reverse strong { color: var(--result-text); font-weight: 600; }
+
     /* Status */
+
     .status {
       text-align: center;
       padding: 1.25rem;
@@ -376,17 +433,17 @@
       <div class="two-col">
         <div class="field-group">
           <label for="amount">Amount</label>
-          <input type="number" id="amount" value="540" min="0" step="any" placeholder="0.00" aria-label="Amount to convert" oninput="convert()" />
+          <input type="number" id="amount" value="" min="0" step="any" placeholder="0.00" aria-label="Amount to convert" oninput="convert()" />
         </div>
         <div class="field-group">
           <label for="currency">Currency</label>
-          <select id="currency" aria-label="Select currency" onchange="convert()">
-            <option value="MXN">🇲🇽 Mexican Peso</option>
-            <option value="DOP">🇩🇴 Dominican Peso</option>
+          <select id="currency" aria-label="Select currency" onchange="onCurrencyChange()">
             <option value="AWG">🇦🇼 Aruban Florin</option>
-            <option value="JMD">🇯🇲 Jamaican Dollar</option>
             <option value="CAD">🇨🇦 Canadian Dollar</option>
+            <option value="DOP">🇩🇴 Dominican Peso</option>
+            <option value="JMD">🇯🇲 Jamaican Dollar</option>
             <option value="LRD">🇱🇷 Liberian Dollar</option>
+            <option value="MXN">🇲🇽 Mexican Peso</option>
           </select>
         </div>
       </div>
@@ -394,8 +451,12 @@
       <div class="convert-row" aria-hidden="true">
         <hr />
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
-        converting to US Dollar (USD)
+        <span id="convert-label">converting to US Dollar (USD)</span>
         <hr />
+        <button class="swap-btn" onclick="swapDirection()" id="swap-btn" title="Reverse: USD to currency" aria-label="Swap conversion direction">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+          Swap
+        </button>
       </div>
 
       <section class="hist-section" id="hist-section" aria-label="Historical date">
@@ -415,6 +476,14 @@
       </div>
       <div class="status error" id="status-error" role="alert"></div>
 
+      <div class="empty-state" id="empty-state" aria-live="polite">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
+        <div class="empty-state-text">
+          <strong>Enter an amount to convert</strong>
+          Type a value above to see the equivalent in US Dollars.
+        </div>
+      </div>
+
       <div class="result" id="result" aria-live="polite">
         <div class="result-label">Converted Amount</div>
         <div class="result-amount" id="result-amount">—</div>
@@ -423,6 +492,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
           <span id="rate-text">—</span>
         </div>
+        <div class="result-reverse" id="result-reverse"></div>
       </div>
 
       <div class="screenshot-row">
@@ -452,6 +522,8 @@
 
     let mode = 'live';
     let debounce = null;
+    let direction = 'to-usd'; // 'to-usd' or 'to-foreign'
+
 
     function setMode(m) {
       mode = m;
@@ -460,6 +532,15 @@
       document.getElementById('tab-live').setAttribute('aria-selected', m === 'live');
       document.getElementById('tab-hist').setAttribute('aria-selected', m === 'historical');
       document.getElementById('hist-section').classList.toggle('visible', m === 'historical');
+      convert();
+    }
+
+    function onCurrencyChange() {
+      const cur = CURRENCIES[document.getElementById('currency').value];
+      const lbl = document.getElementById('convert-label');
+      if (lbl) lbl.textContent = direction === 'to-usd'
+        ? 'converting to US Dollar (USD)'
+        : 'converting to ' + cur.name + ' (' + cur.code + ')';
       convert();
     }
 
@@ -475,33 +556,78 @@
     }
 
     function showLoading() {
-      hide('result'); hide('status-error');
+      hide('result'); hide('status-error'); hideEmpty();
       show('status-loading');
     }
 
     function showError(msg) {
-      hide('status-loading'); hide('result');
+      hide('status-loading'); hide('result'); hideEmpty();
       const el = document.getElementById('status-error');
       el.textContent = msg;
       el.classList.add('visible');
     }
 
-    function showResult(usd, rate, key, dateLabel) {
-      hide('status-loading'); hide('status-error');
+    function showResult(convertedAmt, rate, key, dateLabel) {
+      hide('status-loading'); hide('status-error'); hideEmpty();
       const cur = CURRENCIES[key];
       const amt = parseFloat(document.getElementById('amount').value) || 0;
-      document.getElementById('result-amount').textContent =
-        '$' + usd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      document.getElementById('result-desc').textContent =
-        cur.flag + '  ' + amt.toLocaleString('en-US') + ' ' + cur.code +
-        '  →  USD' + (dateLabel ? '   ·   ' + dateLabel : '');
-      document.getElementById('rate-text').textContent =
-        '1 ' + cur.code + ' = $' + rate.toFixed(6) + ' USD';
+
+      if (direction === 'to-usd') {
+        document.getElementById('result-amount').textContent =
+          '$' + convertedAmt.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        document.getElementById('result-desc').textContent =
+          cur.flag + '  ' + amt.toLocaleString('en-US') + ' ' + cur.code +
+          '  →  USD' + (dateLabel ? '   ·   ' + dateLabel : '');
+        document.getElementById('rate-text').textContent =
+          '1 ' + cur.code + ' = $' + rate.toFixed(6) + ' USD';
+        const revAmt = (1 / rate).toFixed(4);
+        const rev = document.getElementById('result-reverse');
+        rev.innerHTML = 'Reverse: <strong>$1 USD = ' + revAmt + ' ' + cur.code + '</strong>';
+        rev.classList.add('visible');
+      } else {
+        const foreignAmt = amt / rate;
+        document.getElementById('result-amount').textContent =
+          foreignAmt.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ' + cur.code;
+        document.getElementById('result-desc').textContent =
+          '🇺🇸  $' + amt.toLocaleString('en-US') + ' USD  →  ' + cur.flag + ' ' + cur.code +
+          (dateLabel ? '   ·   ' + dateLabel : '');
+        document.getElementById('rate-text').textContent =
+          '$1 USD = ' + (1 / rate).toFixed(6) + ' ' + cur.code;
+        const rev = document.getElementById('result-reverse');
+        rev.innerHTML = 'Reverse: <strong>1 ' + cur.code + ' = $' + rate.toFixed(4) + ' USD</strong>';
+        rev.classList.add('visible');
+      }
       show('result');
     }
 
-    function show(id) { document.getElementById(id).classList.add('visible'); }
+    function show(id) { document.getElementById(id).classList.add('visible'); document.getElementById(id).classList.remove('hidden'); }
     function hide(id) { document.getElementById(id).classList.remove('visible'); }
+    function showEmpty() { document.getElementById('empty-state').classList.remove('hidden'); hide('result'); hide('status-loading'); hide('status-error'); }
+    function hideEmpty() { document.getElementById('empty-state').classList.add('hidden'); }
+
+    function swapDirection() {
+      direction = direction === 'to-usd' ? 'to-foreign' : 'to-usd';
+      const btn = document.getElementById('swap-btn');
+      const row = document.querySelector('.convert-row');
+      const label = row.querySelector('span') || row;
+      // Update the arrow text node
+      const textNodes = Array.from(row.childNodes).filter(n => n.nodeType === 3 && n.textContent.trim());
+      const cur = CURRENCIES[document.getElementById('currency').value];
+      const lbl = document.getElementById('convert-label');
+      if (lbl) lbl.textContent = direction === 'to-foreign'
+        ? 'converting to ' + cur.name + ' (' + cur.code + ')'
+        : 'converting to US Dollar (USD)';
+      if (direction === 'to-foreign') {
+        btn.style.borderColor = 'var(--navy)';
+        btn.style.color = 'var(--navy)';
+        btn.style.background = 'var(--navy-light)';
+      } else {
+        btn.style.borderColor = '';
+        btn.style.color = '';
+        btn.style.background = '';
+      }
+      convert();
+    }
 
     async function convert() {
       clearTimeout(debounce);
@@ -509,7 +635,7 @@
         const key = document.getElementById('currency').value;
         const amount = parseFloat(document.getElementById('amount').value);
         const cur = CURRENCIES[key];
-        if (!amount || amount <= 0) { hide('result'); hide('status-loading'); hide('status-error'); return; }
+        if (!amount || amount <= 0) { showEmpty(); return; }
 
         showLoading();
         try {
@@ -517,7 +643,7 @@
             const res = await fetch(`/api/rate?from=${cur.code}`);
             if (!res.ok) throw new Error('Rate unavailable');
             const data = await res.json();
-            showResult(amount * data.rates.USD, data.rates.USD, key, null);
+            showResult(amount * data.rates.USD, data.rates.USD, key, null);  // rate passed always as foreign->USD
           } else {
             const date = document.getElementById('histdate').value;
             if (!date) { hide('status-loading'); return; }
