@@ -714,7 +714,7 @@
         const canvas = await html2canvas(card, {
           scale: 2,
           useCORS: true,
-          backgroundColor: '#ffffff',
+          backgroundColor: getComputedStyle(document.getElementById('capture-zone')).backgroundColor,
           logging: false,
         });
 
